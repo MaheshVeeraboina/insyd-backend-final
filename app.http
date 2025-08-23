@@ -1,0 +1,32 @@
+### Health Check
+GET http://localhost:3001/
+Accept: application/json
+
+### Create User
+POST http://localhost:3001/users
+Content-Type: application/json
+
+{
+  "username": "alice",
+  "email": "alice@example.com",
+  "preferences": "in-app"
+}
+
+### Create Event (like from user 1 to user 2)
+POST http://localhost:3001/events
+Content-Type: application/json
+
+{
+  "type": "like",
+  "source_user_id": 1,
+  "target_user_id": 2,
+  "data": "Liked post 123"
+}
+
+### Get Notifications for user 2
+GET http://localhost:3001/notifications/2
+Accept: application/json
+
+### Mark Notification as Read
+POST http://localhost:3001/notifications/1/read
+Accept: application/json
