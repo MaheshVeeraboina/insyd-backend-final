@@ -1,32 +1,54 @@
-### Health Check
+### Root route
 GET http://localhost:3001/
 Accept: application/json
 
-### Create User
-POST http://localhost:3001/users
+###
+
+### Get all users
+GET http://localhost:3001/api/users
+Accept: application/json
+
+###
+
+### Add a new user
+POST http://localhost:3001/api/users
 Content-Type: application/json
 
 {
-  "username": "alice",
-  "email": "alice@example.com",
-  "preferences": "in-app"
+  "name": "Alice",
+  "email": "alice@example.com"
 }
 
-### Create Event (like from user 1 to user 2)
-POST http://localhost:3001/events
+###
+
+### Get all notifications
+GET http://localhost:3001/api/notifications
+Accept: application/json
+
+###
+
+### Get a single notification by ID
+GET http://localhost:3001/api/notifications/1
+Accept: application/json
+
+###
+
+### Add a new notification
+POST http://localhost:3001/api/notifications
 Content-Type: application/json
 
 {
-  "type": "like",
-  "source_user_id": 1,
-  "target_user_id": 2,
-  "data": "Liked post 123"
+  "title": "New Post",
+  "message": "Alice posted a new blog!",
+  "user_id": 1
 }
 
-### Get Notifications for user 2
-GET http://localhost:3001/notifications/2
-Accept: application/json
+###
 
-### Mark Notification as Read
-POST http://localhost:3001/notifications/1/read
-Accept: application/json
+### Delete a notification
+DELETE http://localhost:3001/api/notifications/1
+
+###
+
+### Mark a notification as read
+PUT http://localhost:3001/api/notifications/1/read
