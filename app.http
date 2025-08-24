@@ -1,54 +1,222 @@
-### Root route
-GET http://localhost:3001/
-Accept: application/json
+### Health Check
+GET http://localhost:3001/api/health
 
-###
-
-### Get all users
+### Get All Users
 GET http://localhost:3001/api/users
-Accept: application/json
 
-###
+### Get System Statistics
+GET http://localhost:3001/api/stats
 
-### Add a new user
-POST http://localhost:3001/api/users
-Content-Type: application/json
-
-{
-  "name": "Alice",
-  "email": "alice@example.com"
-}
-
-###
-
-### Get all notifications
-GET http://localhost:3001/api/notifications
-Accept: application/json
-
-###
-
-### Get a single notification by ID
+### Get Notifications for User 1
 GET http://localhost:3001/api/notifications/1
-Accept: application/json
 
-###
+### Get Notifications for User 2 with pagination
+GET http://localhost:3001/api/notifications/2?limit=10&offset=0
 
-### Add a new notification
-POST http://localhost:3001/api/notifications
+### Mark Notification as Read
+PATCH http://localhost:3001/api/notifications/1/read
+Content-Type: application/json
+
+### Get All Events (for debugging)
+GET http://localhost:3001/api/events
+
+### Create Like Event
+# User 1 likes a post (target user will be auto-selected as another user)
+POST http://localhost:3001/api/events
 Content-Type: application/json
 
 {
-  "title": "New Post",
-  "message": "Alice posted a new blog!",
-  "user_id": 1
+  "type": "like",
+  "source_user_id": 1,
+  "target_user_id": 2,
+  "post_id": 123
+}
+
+### Create Another Like Event
+# User 2 likes a post
+POST http://localhost:3001/api/events
+Content-Type: application/json
+
+{
+  "type": "like",
+  "source_user_id": 2,
+  "target_user_id": 3,
+  "post_id": 456
+}
+
+### Create Comment Event
+# User 3 comments on a post
+POST http://localhost:3001/api/events
+Content-Type: application/json
+
+{
+  "type": "comment",
+  "source_user_id": 3,
+  "target_user_id": 1,
+  "post_id": 789,
+  "comment": "This design is absolutely stunning! Great work!"
+}
+
+### Create Another Comment Event
+# User 4 comments on a post
+POST http://localhost:3001/api/events
+Content-Type: application/json
+
+{
+  "type": "comment",
+  "source_user_id": 4,
+  "target_user_id": 2,
+  "post_id": 101,
+  "comment": "I love the minimalist approach in this architecture."
+}
+
+### Create Follow Event
+# User 1 follows User 2
+POST http://localhost:3001/api/events
+Content-Type: application/json
+
+{
+  "type": "follow",
+  "source_user_id": 1,
+  "target_user_id": 2
+}
+
+### Create Another Follow Event
+# User 3 follows User 1
+POST http://localhost:3001/api/events
+Content-Type: application/json
+
+{
+  "type": "follow",
+  "source_user_id": 3,
+  "target_user_id": 1
+}
+
+### Create Post Event
+# User 2 creates a new post (this will notify followers)
+POST http://localhost:3001/api/events
+Content-Type: application/json
+
+{
+  "type": "post",
+  "source_user_id": 2,
+  "post_id": 202,
+  "post_title": "Modern Sustainable Architecture Trends 2024"
+}
+
+### Create Another Post Event
+# User 1 creates a new post
+POST http://localhost:3001/api/events
+Content-Type: application/json
+
+{
+  "type": "post",
+  "source_user_id": 1,
+  "post_id": 303,
+  "post_title": "Minimalist Interior Design Principles"
+}
+
+### Create Complex Event with Additional Data
+POST http://localhost:3001/api/events
+Content-Type: application/json
+
+{
+  "type": "comment",
+  "source_user_id": 5,
+  "target_user_id": 3,
+  "post_id": 404,
+  "comment": "The structural integrity of this design is impressive!",
+  "data": "{\"rating\": 5, \"category\": \"architecture\"}"
+}
+
+### Test Error Case - Invalid User ID
+POST http://localhost:3001/api/events
+Content-Type: application/json
+
+{
+  "type": "like",
+  "source_user_id": 999,
+  "target_user_id": 1,
+  "post_id": 505
+}
+
+### Test Error Case - Missing Required Fields
+POST http://localhost:3001/api/events
+Content-Type: application/json
+
+{
+  "type": "like",
+  "source_user_id": 1
+}
+
+### Get Notifications After Creating Events
+# Check notifications for different users after creating events
+GET http://localhost:3001/api/notifications/1
+
+###
+GET http://localhost:3001/api/notifications/2
+
+###
+GET http://localhost:3001/api/notifications/3
+
+### Mark Multiple Notifications as Read
+# Mark first notification as read
+PATCH http://localhost:3001/api/notifications/1/read
+
+###
+PATCH http://localhost:3001/api/notifications/2/read
+
+###
+PATCH http://localhost:3001/api/notifications/3/read
+
+### Check Stats After Operations
+GET http://localhost:3001/api/stats
+
+### Get Updated Notifications (should show some as read)
+GET http://localhost:3001/api/notifications/1
+
+### Test Pagination with Notifications
+GET http://localhost:3001/api/notifications/1?limit=5&offset=0
+
+###
+GET http://localhost:3001/api/notifications/1?limit=5&offset=5
+
+### Bulk Create Events for Testing
+# Create multiple events to test the queue system
+POST http://localhost:3001/api/events
+Content-Type: application/json
+
+{
+  "type": "like",
+  "source_user_id": 1,
+  "target_user_id": 2,
+  "post_id": 601
 }
 
 ###
+POST http://localhost:3001/api/events
+Content-Type: application/json
 
-### Delete a notification
-DELETE http://localhost:3001/api/notifications/1
+{
+  "type": "comment",
+  "source_user_id": 2,
+  "target_user_id": 3,
+  "post_id": 602,
+  "comment": "Great architectural concept!"
+}
 
 ###
+POST http://localhost:3001/api/events
+Content-Type: application/json
 
-### Mark a notification as read
-PUT http://localhost:3001/api/notifications/1/read
+{
+  "type": "follow",
+  "source_user_id": 3,
+  "target_user_id": 4
+}
+
+### Check Queue Status in Stats
+GET http://localhost:3001/api/stats
+
+### Final Health Check
+GET http://localhost:3001/api/health
